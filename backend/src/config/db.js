@@ -8,3 +8,5 @@ async function connectDB(){
         console.log(`db not connected ${err}`);
     }
 }
+
+module.exports = connectDB;
