@@ -1,37 +1,48 @@
-import { useEffect, useState } from 'react';
-import { getRecipes } from './services/recipeApi';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { useState } from 'react';
+import SiteFooter from './components/SiteFooter';
+import SiteHeader from './components/SiteHeader';
+import BlogPage from './pages/BlogPage';
+import HomePage from './pages/HomePage';
+import AuthPage from './pages/AuthPage';
+import ProfilePage from './pages/ProfilePage';
+import './App.css';
 
 function App() {
-  const [recipes, setRecipes] = useState([]);
-  const [error, setError] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [auth, setAuth] = useState(() => JSON.parse(localStorage.getItem('nourishAuth') || 'null'));
+  const [savedRecipes, setSavedRecipes] = useState(() => JSON.parse(localStorage.getItem('nourishSavedRecipes') || '[]'));
 
-  useEffect(() => {
-    async function loadRecipes() {
-      try {
-        const data = await getRecipes();
-        setRecipes(data);
-      } catch (err) {
-        setError(err.message);
-      }
-    }
+  function handleToggleSave(recipe) {
+    setSavedRecipes((current) => {
+      const recipeId = recipe._id || recipe.id;
+      const next = current.some((saved) => (saved._id || saved.id) === recipeId)
+        ? current.filter((saved) => (saved._id || saved.id) !== recipeId)
+        : [...current, recipe];
+      localStorage.setItem('nourishSavedRecipes', JSON.stringify(next));
+      return next;
+    });
+  }
 
-    loadRecipes();
-  }, []);
-
-  if (error) {
-    return <p>{error}</p>;
+  function handleLogout() {
+    localStorage.removeItem('nourishAuth');
+    setAuth(null);
   }
 
   return (
-    <main>
-      <h1>Recipes</h1>
-
-      {recipes.map((recipe) => (
-        <article key={recipe._id}>
-          <h2>{recipe.title}</h2>
-        </article>
-      ))}
-    </main>
+    <BrowserRouter>
+      <div className="site-shell">
+        <SiteHeader onSearch={setSearchQuery} isAuthenticated={Boolean(auth)} user={auth?.user} />
+        <Routes>
+          <Route path="/" element={<HomePage searchQuery={searchQuery} savedRecipes={savedRecipes} onToggleSave={handleToggleSave} />} />
+          <Route path="/blog" element={<BlogPage isAuthenticated={Boolean(auth)} />} />
+          <Route path="/signin" element={<AuthPage mode="signin" onAuthenticated={setAuth} />} />
+          <Route path="/signup" element={<AuthPage mode="signup" onAuthenticated={setAuth} />} />
+          <Route path="/profile" element={auth ? <ProfilePage auth={auth} savedRecipes={savedRecipes} onToggleSave={handleToggleSave} onLogout={handleLogout} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />
+        </Routes>
+        <SiteFooter isAuthenticated={Boolean(auth)} />
+      </div>
+    </BrowserRouter>
   );
 }
 
