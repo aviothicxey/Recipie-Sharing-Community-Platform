@@ -1,7 +1,7 @@
 const express = require('express');
 const authRoutes = require('./routes/auth.routes');
 const recipeRoutes = require('./routes/recipe.routes');
-
+const uploadRoutes = require('./routes/upload.routes');
 const app = express();
 
 app.use((req, res, next) => {
@@ -20,6 +20,11 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/recipes', recipeRoutes);
+app.use('/api/uploads', uploadRoutes);
+
+app.get('/debug-upload-route', (req, res) => {
+    res.json({ message: 'App is loading the updated code' });
+});
 
 app.use((err, req, res, next) => {
     if (err.name === 'ValidationError') {
