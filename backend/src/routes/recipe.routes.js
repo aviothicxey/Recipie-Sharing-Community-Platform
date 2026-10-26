@@ -8,9 +8,6 @@ const {
     deleteRecipe
 } = require('../controllers/recipe.controller');
 
-
-
-
 const router = express.Router();
 
 router.get('/', listRecipes);
