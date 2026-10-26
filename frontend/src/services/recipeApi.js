@@ -1,7 +1,10 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
-export async function getRecipes() {
-  const response = await fetch(`${API_URL}/api/recipes`);
+export async function getRecipes(ingredients = []) {
+  const params = new URLSearchParams();
+  ingredients.forEach((ingredient) => params.append('ingredients', ingredient));
+  const query = params.toString();
+  const response = await fetch(`${API_URL}/api/recipes${query ? `?${query}` : ''}`);
 
   if (!response.ok) {
     throw new Error('Failed to load recipes');
@@ -32,5 +35,28 @@ export async function createRecipe(recipe, token) {
 
   const result = await response.json();
   if (!response.ok) throw new Error(result.message || 'Failed to publish recipe');
+  return result;
+}
+
+export async function getBlogs() {
+  const response = await fetch(`${API_URL}/api/blogs`);
+  if (!response.ok) throw new Error('Failed to load community blogs');
+  return response.json();
+}
+
+export async function getBlog(id) {
+  const response = await fetch(`${API_URL}/api/blogs/${id}`);
+  if (!response.ok) throw new Error('Failed to load blog post');
+  return response.json();
+}
+
+export async function createBlog(post, token) {
+  const response = await fetch(`${API_URL}/api/blogs`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(post),
+  });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || 'Failed to publish blog post');
   return result;
 }

@@ -19,9 +19,9 @@ function RecipeCard({ recipe, isSaved = false, onToggleSave }) {
         </button>
       </div>
       <div className="recipe-card__body">
-        <span>{recipe.category || recipe.cuisine || 'Recipe'}</span>
+        <span>{recipe.contentType === 'editorial' ? 'Editorial' : `By ${recipe.authorId?.name || 'Community member'}`}</span>
         <h3><Link to={`/recipes/${recipeId}`}>{recipe.title}</Link></h3>
-        <p>{recipe.time || `${recipe.cookTime || 20} min`} · {recipe.difficulty || 'Easy'}</p>
+        <p>{recipe.category || recipe.cuisine || 'Recipe'} · {recipe.time || `${recipe.cookTime || 20} min`} · {recipe.difficulty || 'Easy'}</p>
       </div>
     </article>
   );

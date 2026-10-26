@@ -3,8 +3,9 @@ import { useEffect } from 'react';
 import { blogPosts } from '../data/content';
 import BlogCard from '../components/BlogCard';
 
-function BlogPage({ isAuthenticated }) {
-  const [featuredPost, ...posts] = blogPosts;
+function BlogPage({ isAuthenticated, posts: suppliedPosts }) {
+  const communityPosts = suppliedPosts || [];
+  const [featuredPost, ...posts] = communityPosts;
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -22,8 +23,10 @@ function BlogPage({ isAuthenticated }) {
           <div><p className="eyebrow">Fresh from the journal</p><h2>Good things to read</h2></div>
           <Link className="text-link" to="/">Back to recipes <span>→</span></Link>
         </div>
-        <BlogCard post={featuredPost} featured />
-        <div className="blog-grid">{posts.map((post) => <BlogCard key={post.id} post={post} />)}</div>
+        <h3 className="content-subheading">Editorial journal</h3>
+        <div className="blog-grid">{blogPosts.map((post) => <BlogCard key={post.id} post={post} />)}</div>
+        <h3 className="content-subheading">Community blogs</h3>
+        {featuredPost ? <><BlogCard post={featuredPost} featured /><div className="blog-grid">{posts.map((post) => <BlogCard key={post._id || post.id} post={post} />)}</div></> : <p className="empty-results">No community blog posts yet. Be the first to share one.</p>}
       </section>
       {!isAuthenticated && <section className="blog-signup">
         <p className="eyebrow">A note from us</p>
