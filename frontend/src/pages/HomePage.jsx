@@ -58,14 +58,14 @@ function HomePage({ searchQuery, savedRecipes, onToggleSave }) {
           <p className="eyebrow">A little bit about us</p>
           <h2>Gourmet but good for ya!</h2>
           <p>Welcome to Nourish, where healthy eating doesn&apos;t mean saying goodbye to joy, chocolate, or carbs. We&apos;re breaking up with food shame and redefining what it means to nourish your body.</p>
-          <Link className="pill-button pill-button--white" to="/blog">Our story <span>→</span></Link>
+          <Link className="pill-button pill-button--white" to="/story">Our story <span>→</span></Link>
         </div>
       </section>
 
       <section className="recipes-section" id="recipes">
         <div className="section-heading">
           <div><p className="eyebrow">Made for your table</p><h2>Fancy looking meals<br />that are actually delicious</h2></div>
-          <Link className="text-link" to="/#recipes">View all recipes <span>→</span></Link>
+          <Link className="text-link" to="/recipes">View all recipes <span>→</span></Link>
         </div>
         {error && <p className="api-note">Showing our favourites while recipes load: {error}</p>}
         {searchQuery && <p className="search-summary">Search results for <strong>&quot;{searchQuery}&quot;</strong></p>}

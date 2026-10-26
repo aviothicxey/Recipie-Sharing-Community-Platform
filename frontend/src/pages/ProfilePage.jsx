@@ -24,7 +24,10 @@ function ProfilePage({ auth, savedRecipes, onToggleSave, onLogout }) {
       <section className="profile-content">
         <div className="profile-heading">
           <div><p className="eyebrow">Your collection</p><h2>Saved recipes</h2></div>
-          <Link className="text-link" to="/#recipes">Discover recipes <span>→</span></Link>
+          <div className="profile-actions">
+            <Link className="pill-button pill-button--green" to="/create-recipe">Share a recipe <span>→</span></Link>
+            <Link className="text-link" to="/recipes">Discover recipes <span>→</span></Link>
+          </div>
         </div>
         {savedRecipes.length ? (
           <div className="recipe-grid">
@@ -34,7 +37,7 @@ function ProfilePage({ auth, savedRecipes, onToggleSave, onLogout }) {
           <div className="empty-profile">
             <h3>Your saved recipes will appear here.</h3>
             <p>Tap the heart on any recipe you want to make later.</p>
-            <Link className="pill-button pill-button--green" to="/#recipes">Find a recipe <span>→</span></Link>
+            <Link className="pill-button pill-button--green" to="/recipes">Find a recipe <span>→</span></Link>
           </div>
         )}
       </section>
