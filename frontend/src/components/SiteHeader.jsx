@@ -18,7 +18,8 @@ function SiteHeader({ onSearch, isAuthenticated, user }) {
         <nav className="main-nav" aria-label="Main navigation">
           <Link to="/#recipes">Recipes <small>⌄</small></Link>
           <Link to="/#stories">Our story <small>⌄</small></Link>
-          <Link to="/blog">Journal</Link>
+          <Link to="/blog">Journal <small>⌄</small></Link>
+          {user?.role === 'admin' && <Link to="/admin">Admin</Link>}
         </nav>
         <div className="header-actions">
           {isSearchOpen && (
