@@ -102,7 +102,7 @@ async function updateRecipe(req, res, next) {
         if (!isValidId(req.params.id)) return res.status(400).json({ message: 'Invalid recipe id' });
         const updates = recipeInput(req.body);
         if (updates.title) updates.slug = makeSlug(updates.title);
-        const recipe = await Recipe.findOneAndUpdate({ _id: req.params.id, authorId: req.user._id }, updates, { new: true, runValidators: true });
+        const recipe = await Recipe.findOneAndUpdate({ _id: req.params.id, authorId: req.user._id }, updates, { returnDocument: 'after', runValidators: true });
         if (!recipe) return res.status(404).json({ message: 'Recipe not found or not owned by you' });
         return res.json(recipe);
     } catch (error) {
