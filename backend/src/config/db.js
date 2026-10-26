@@ -6,5 +6,8 @@ async function connectDB(){
         console.log("db connected");
     }catch(err){
         console.log(`db not connected ${err}`);
+        throw err;
     }
 }
+
+module.exports = connectDB;
