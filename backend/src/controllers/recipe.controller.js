@@ -25,6 +25,10 @@ function isValidId(id) {
     return mongoose.Types.ObjectId.isValid(id);
 }
 
+function escapeRegex(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 function recipeInput(body) {
     const allowedFields = [
         'title', 'description', 'coverUrl', 'cuisine', 'diet', 'cookTime',
@@ -38,13 +42,19 @@ function recipeInput(body) {
 
 async function listRecipes(req, res, next) {
     try {
-        const { cuisine, diet, maxTime, difficulty, search, cursor } = req.query;
+        const { cuisine, diet, maxTime, difficulty, search, ingredients, cursor } = req.query;
         const filter = {};
         if (cuisine) filter.cuisine = cuisine.toLowerCase();
         if (diet) filter.diet = diet.toLowerCase();
         if (difficulty) filter.difficulty = difficulty.toLowerCase();
         if (maxTime) filter.cookTime = { $lte: Number(maxTime) };
         if (search) filter.$text = { $search: search };
+        const selectedIngredients = (Array.isArray(ingredients) ? ingredients : ingredients ? [ingredients] : [])
+            .map((ingredient) => ingredient.trim().toLowerCase())
+            .filter(Boolean);
+        if (selectedIngredients.length) {
+            filter['ingredients.name'] = { $in: selectedIngredients.map((ingredient) => new RegExp(`^${escapeRegex(ingredient)}$`, 'i')) };
+        }
 
         if (cursor) {
             const decoded = decodeCursor(cursor);
