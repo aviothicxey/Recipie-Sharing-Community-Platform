@@ -1,14 +1,29 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createBlog } from '../services/recipeApi';
+import { createBlog, uploadImage } from '../services/recipeApi';
 
 function CreateBlogPage({ auth, onCreated }) {
   const navigate = useNavigate();
   const [form, setForm] = useState({ title: '', category: 'Community', excerpt: '', content: '', image: '' });
   const [error, setError] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
 
   function update(field, value) {
     setForm((current) => ({ ...current, [field]: value }));
+  }
+
+  async function handleImageChange(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setError('');
+    setIsUploading(true);
+    try {
+      update('image', await uploadImage(file, auth.token));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsUploading(false);
+    }
   }
 
   async function handleSubmit(event) {
@@ -41,10 +56,14 @@ function CreateBlogPage({ auth, onCreated }) {
         <form onSubmit={handleSubmit}>
           <input required placeholder="Post title" value={form.title} onChange={(event) => update('title', event.target.value)} />
           <input required placeholder="Category (e.g. Wellness)" value={form.category} onChange={(event) => update('category', event.target.value)} />
-          <input type="url" placeholder="Cover image URL (optional)" value={form.image} onChange={(event) => update('image', event.target.value)} />
+          <label className="upload-field">Blog cover image
+            <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageChange} disabled={isUploading} />
+            <small>{isUploading ? 'Uploading image…' : 'JPG, PNG or WEBP up to 5 MB'}</small>
+          </label>
+          <input type="url" placeholder="Or paste a cover image URL (optional)" value={form.image} onChange={(event) => update('image', event.target.value)} />
           <textarea required rows="3" placeholder="Short introduction" value={form.excerpt} onChange={(event) => update('excerpt', event.target.value)} />
           <textarea required rows="12" placeholder="Write your story here…" value={form.content} onChange={(event) => update('content', event.target.value)} />
-          <button className="pill-button pill-button--green" type="submit">Publish blog post <span>→</span></button>
+          <button className="pill-button pill-button--green" type="submit" disabled={isUploading}>{isUploading ? 'Uploading…' : 'Publish blog post'} <span>→</span></button>
         </form>
       </section>
     </main>

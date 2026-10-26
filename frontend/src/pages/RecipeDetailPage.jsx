@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { editorialRecipes } from '../data/content';
 import { getRecipe } from '../services/recipeApi';
 
-function RecipeDetailPage() {
+function RecipeDetailPage({ auth }) {
   const { id } = useParams();
   const fallback = editorialRecipes.find((recipe) => recipe.id === id);
   const [recipe, setRecipe] = useState(fallback);
@@ -21,6 +21,8 @@ function RecipeDetailPage() {
 
   const ingredients = recipe.ingredients || [];
   const steps = recipe.steps || [];
+  const authorId = typeof recipe.authorId === 'object' ? recipe.authorId?._id : recipe.authorId;
+  const canEdit = recipe.contentType !== 'editorial' && String(authorId) === String(auth?.user?.id);
   return (
     <main className="detail-page">
       <section className="detail-hero">
@@ -29,6 +31,7 @@ function RecipeDetailPage() {
           <p className="eyebrow">{recipe.category || recipe.cuisine || 'Recipe'}</p>
           <h1>{recipe.title}</h1>
           <p>{recipe.description || 'A Nourish community recipe made for sharing.'}</p>
+          {canEdit && <Link className="pill-button pill-button--white" to={`/recipes/${recipe._id}/edit`}>Edit recipe <span>→</span></Link>}
           <div className="recipe-facts"><span>{recipe.time || `${recipe.cookTime || 20} min`}</span><span>{recipe.difficulty || 'Easy'}</span><span>{recipe.servings ? `${recipe.servings} servings` : 'Fresh and delicious'}</span></div>
         </div>
       </section>

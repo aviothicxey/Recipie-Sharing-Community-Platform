@@ -191,6 +191,9 @@ button { font: inherit; }
 .create-intro { color: #806e62; line-height: 1.5; }
 .create-card form { display: grid; gap: .8rem; margin-top: 2rem; }
 .create-card input, .create-card textarea { width: 100%; padding: .9rem 1rem; border: 1px solid rgba(53,20,12,.3); background: #fff; color: var(--ink); font: inherit; resize: vertical; }
+.upload-field { display: grid; gap: .45rem; padding: .9rem 1rem; border: 1px dashed rgba(53,20,12,.35); background: #fffaf0; color: var(--ink); font-size: .8rem; font-weight: 700; }
+.upload-field input { padding: 0; border: 0; background: transparent; }
+.upload-field small { color: #806e62; font-size: .72rem; font-weight: 400; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .8rem; }
 .blog-post-page { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 7%; padding: 6rem 10%; }
 .blog-post-page > img { width: 100%; aspect-ratio: 1 / .9; object-fit: cover; }

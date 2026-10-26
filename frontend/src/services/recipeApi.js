@@ -38,6 +38,34 @@ export async function createRecipe(recipe, token) {
   return result;
 }
 
+export async function updateRecipe(id, recipe, token) {
+  const response = await fetch(`${API_URL}/api/recipes/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(recipe),
+  });
+
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || 'Failed to update recipe');
+  return result;
+}
+
+export async function uploadImage(file, token) {
+  const formData = new FormData();
+  formData.append('image', file);
+  const response = await fetch(`${API_URL}/api/uploads/image`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || 'Image upload failed');
+  return result.imageUrl;
+}
+
 export async function getBlogs() {
   const response = await fetch(`${API_URL}/api/blogs`);
   if (!response.ok) throw new Error('Failed to load community blogs');
