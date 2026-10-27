@@ -10,6 +10,7 @@ app.use((req, res, next) => {
     const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
         .split(',')
         .map((origin) => origin.trim())
+        .map((origin) => origin.replace(/\/$/, ''))
         .filter(Boolean);
     const requestOrigin = req.headers.origin;
     if (requestOrigin && allowedOrigins.includes(requestOrigin)) {

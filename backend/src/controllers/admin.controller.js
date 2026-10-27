@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const Recipe = require('../models/Recipe');
-const Blog = require('../models/Blog');
+const BlogPost = require('../models/BlogPost');
 
-const resourceMap = { users: User, recipes: Recipe, blogs: Blog };
+const resourceMap = { users: User, recipes: Recipe, blogs: BlogPost };
 const statusValues = {
     users: ['active', 'hidden'],
     recipes: ['published', 'hidden'],
