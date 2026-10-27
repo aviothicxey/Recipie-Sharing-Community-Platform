@@ -42,7 +42,7 @@ function HomePage({ searchQuery, savedRecipes, onToggleSave }) {
           <p className="eyebrow">Good food, good mood</p>
           <h1>Trying to eat healthy without hating it?</h1>
           <p className="hero-description">Easy, colourful recipes for real life. Make something delicious today and feel good about it tomorrow.</p>
-          <Link className="pill-button pill-button--light" to="/#recipes">View recipes <span>→</span></Link>
+          <Link className="pill-button pill-button--light" to="/recipes">View recipes <span>→</span></Link>
         </div>
         <div className="hero-art" role="img" aria-label="A colourful healthy toast plate">
           <div className="hero-sun"></div>
