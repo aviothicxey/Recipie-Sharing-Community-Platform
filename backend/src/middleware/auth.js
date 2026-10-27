@@ -14,7 +14,12 @@ async function requireAuth(req, res, next) {
 
         const token = header.slice(7);
         const payload = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findById(payload.userId).select('_id name email');
+        if (payload.userId === 'configured-admin' && payload.role === 'admin') {
+            req.user = { _id: payload.userId, name: 'Administrator', role: 'admin' };
+            return next();
+        }
+
+        const user = await User.findById(payload.userId).select('_id name email role status');
 
         if (!user) {
             return res.status(401).json({ message: 'User no longer exists' });
@@ -30,4 +35,12 @@ async function requireAuth(req, res, next) {
     }
 }
 
+function requireAdmin(req, res, next) {
+    if (req.user?.role !== 'admin') {
+        return res.status(403).json({ message: 'Administrator access required' });
+    }
+    return next();
+}
+
 module.exports = requireAuth;
+module.exports.requireAdmin = requireAdmin;

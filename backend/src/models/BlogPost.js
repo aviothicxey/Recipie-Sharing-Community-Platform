@@ -8,6 +8,7 @@ const blogPostSchema = new mongoose.Schema(
     excerpt: { type: String, required: true, trim: true, maxlength: 500 },
     content: { type: String, required: true, trim: true, maxlength: 10000 },
     image: { type: String, trim: true, default: '' },
+    status: { type: String, enum: ['published', 'hidden'], default: 'published' },
   },
   { timestamps: true },
 );

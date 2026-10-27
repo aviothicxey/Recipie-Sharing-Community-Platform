@@ -59,9 +59,11 @@ async function adminLogin(req, res, next) {
         const { email, password } = req.body;
         const normalizedEmail = email?.toLowerCase().trim();
 
-        if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD_HASH) {
+        if (process.env.ADMIN_EMAIL && (process.env.ADMIN_PASSWORD_HASH || process.env.ADMIN_PASSWORD)) {
             const validAdmin = normalizedEmail === process.env.ADMIN_EMAIL.toLowerCase().trim()
-                && await bcrypt.compare(password || '', process.env.ADMIN_PASSWORD_HASH);
+                && (process.env.ADMIN_PASSWORD_HASH
+                    ? await bcrypt.compare(password || '', process.env.ADMIN_PASSWORD_HASH)
+                    : password === process.env.ADMIN_PASSWORD);
             if (!validAdmin) {
                 return res.status(401).json({ message: 'Invalid admin email or password' });
             }
