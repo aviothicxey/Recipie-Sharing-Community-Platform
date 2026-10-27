@@ -10,7 +10,14 @@ function BlogPage({ isAuthenticated }) {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
-    getBlogs().then(setPostsData).catch(() => {});
+    getBlogs()
+      .then((response) => {
+        const posts = Array.isArray(response) ? response : response.data;
+        if (Array.isArray(posts) && posts.length > 0) {
+          setPostsData(posts.map((post) => ({ ...post, id: post.id || post.slug })));
+        }
+      })
+      .catch(() => {});
   }, []);
 
   return (
