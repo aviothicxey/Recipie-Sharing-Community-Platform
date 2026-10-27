@@ -65,6 +65,7 @@ const recipeSchema = new mongoose.Schema(
     },
     avgRating: { type: Number, min: 0, max: 5, default: 0 },
     ratingCount: { type: Number, min: 0, default: 0 },
+    status: { type: String, enum: ["published", "hidden"], default: "published" },
   },
   { timestamps: true },
 );

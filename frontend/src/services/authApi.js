@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL;
+import { API_URL } from './apiUrl';
 
 async function submitAuth(path, body) {
   let response;
@@ -32,4 +32,8 @@ export function registerUser(body) {
 
 export function loginUser(body) {
   return submitAuth('login', body);
+}
+
+export function loginAdmin(body) {
+  return submitAuth('admin-login', body);
 }

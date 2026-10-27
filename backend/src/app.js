@@ -37,7 +37,6 @@ app.use((req, res, next) => {
         'GET, POST, PUT, PATCH, DELETE, OPTIONS'
     );
 
-    // Handle browser preflight requests
     if (req.method === 'OPTIONS') {
         return res.sendStatus(204);
     }
