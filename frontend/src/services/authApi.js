@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
 
 async function submitAuth(path, body) {
   let response;
@@ -32,4 +32,8 @@ export function registerUser(body) {
 
 export function loginUser(body) {
   return submitAuth('login', body);
+}
+
+export function loginAdmin(body) {
+  return submitAuth('admin-login', body);
 }

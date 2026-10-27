@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
     passwordHash: { type: String, required: true, select: false },
+    role: { type: String, enum: ["user", "admin"], default: "user" },
     bio: { type: String, trim: true, maxlength: 500, default: "" },
     avatarUrl: { type: String, trim: true, default: "" },
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],

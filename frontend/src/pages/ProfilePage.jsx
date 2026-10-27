@@ -42,6 +42,22 @@ function ProfilePage({ auth, savedRecipes, myRecipes, blogPosts, onToggleSave, o
     navigate('/');
   }
 
+  if (user.role === 'admin') {
+    return (
+      <main className="profile-page">
+        <section className="profile-hero">
+          <div className="profile-avatar">{user.name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || 'A'}</div>
+          <div>
+            <p className="eyebrow">Nourish administration</p>
+            <h1>{user.name || 'Administrator'}</h1>
+            <p>{user.email}</p>
+          </div>
+          <button className="profile-logout" type="button" onClick={handleLogout}>Sign out</button>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className="profile-page">
       <section className="profile-hero">

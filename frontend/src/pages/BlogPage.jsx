@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { blogPosts } from '../data/content';
 import BlogCard from '../components/BlogCard';
+import { getBlogs } from '../services/blogApi';
 
 function BlogPage({ isAuthenticated, posts: suppliedPosts }) {
   const communityPosts = suppliedPosts || [];
@@ -9,6 +10,7 @@ function BlogPage({ isAuthenticated, posts: suppliedPosts }) {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
+    getBlogs().then(setPostsData).catch(() => {});
   }, []);
 
   return (

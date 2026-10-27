@@ -37,6 +37,7 @@ function AuthPage({ mode = 'signin', onAuthenticated }) {
           <input required minLength="8" type="password" placeholder="Password (8+ characters)" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} />
           <button className="pill-button pill-button--green" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Please wait…' : isSignUp ? 'Sign up' : 'Sign in'} <span>→</span></button>
         </form>
+        {!isSignUp && <Link className="admin-signin-link" to="/admin">Sign in as admin <span>→</span></Link>}
         <p className="auth-switch">{isSignUp ? 'Already have an account?' : 'New to Nourish?'} <Link to={isSignUp ? '/signin' : '/signup'}>{isSignUp ? 'Sign in' : 'Sign up'}</Link></p>
       </section>
     </main>
