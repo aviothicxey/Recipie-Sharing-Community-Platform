@@ -43,7 +43,7 @@ function recipeInput(body) {
 async function listRecipes(req, res, next) {
     try {
         const { cuisine, diet, maxTime, difficulty, search, ingredients, cursor } = req.query;
-        const filter = {};
+        const filter = { $or: [{ status: 'published' }, { status: { $exists: false } }] };
         if (cuisine) filter.cuisine = cuisine.toLowerCase();
         if (diet) filter.diet = diet.toLowerCase();
         if (difficulty) filter.difficulty = difficulty.toLowerCase();
@@ -58,10 +58,10 @@ async function listRecipes(req, res, next) {
 
         if (cursor) {
             const decoded = decodeCursor(cursor);
-            filter.$or = [
+            filter.$and = [{ $or: [
                 { createdAt: { $lt: new Date(decoded.createdAt) } },
                 { createdAt: new Date(decoded.createdAt), _id: { $lt: decoded.id } }
-            ];
+            ] }];
         }
 
         const query = Recipe.find(filter).populate('authorId', 'name avatarUrl').sort({ createdAt: -1, _id: -1 }).limit(pageSize + 1);
@@ -79,7 +79,7 @@ async function listRecipes(req, res, next) {
 async function getRecipe(req, res, next) {
     try {
         if (!isValidId(req.params.id)) return res.status(400).json({ message: 'Invalid recipe id' });
-        const recipe = await Recipe.findById(req.params.id).populate('authorId', 'name avatarUrl');
+        const recipe = await Recipe.findOne({ _id: req.params.id, $or: [{ status: 'published' }, { status: { $exists: false } }] }).populate('authorId', 'name avatarUrl');
         if (!recipe) return res.status(404).json({ message: 'Recipe not found' });
         return res.json(recipe);
     } catch (error) {
@@ -120,6 +120,4 @@ async function deleteRecipe(req, res, next) {
         return next(error);
     }
 }
-
-
 module.exports = { listRecipes, getRecipe, createRecipe, updateRecipe, deleteRecipe };

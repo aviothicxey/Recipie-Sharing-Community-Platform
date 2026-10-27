@@ -5,7 +5,7 @@ import BlogCard from '../components/BlogCard';
 import { getBlogs } from '../services/blogApi';
 
 function BlogPage({ isAuthenticated, posts: suppliedPosts }) {
-  const communityPosts = suppliedPosts || [];
+  const [communityPosts, setCommunityPosts] = useState(suppliedPosts || []);
   const [featuredPost, ...posts] = communityPosts;
 
   useEffect(() => {
@@ -14,7 +14,7 @@ function BlogPage({ isAuthenticated, posts: suppliedPosts }) {
       .then((response) => {
         const posts = Array.isArray(response) ? response : response.data;
         if (Array.isArray(posts) && posts.length > 0) {
-          setPostsData(posts.map((post) => ({ ...post, id: post.id || post.slug })));
+          setCommunityPosts(posts.map((post) => ({ ...post, id: post.id || post.slug || post._id })));
         }
       })
       .catch(() => {});
