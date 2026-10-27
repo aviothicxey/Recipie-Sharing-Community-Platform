@@ -1,44 +1,32 @@
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { blogPosts } from '../data/content';
-import { getBlog } from '../services/blogApi';
+import { getBlog } from '../services/recipeApi';
 
-function BlogPostPage() {
-  const { postId } = useParams();
-  const [post, setPost] = useState(() => blogPosts.find((candidate) => candidate.id === postId));
+function BlogPostPage({ posts: suppliedPosts }) {
+  const { id } = useParams();
+  const post = [...(suppliedPosts || []), ...blogPosts].find((item) => String(item.id || item._id) === id);
+  const [loadedPost, setLoadedPost] = useState(post);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    getBlog(postId).then(setPost).catch(() => {});
-  }, [postId]);
+    if (post) return;
+    getBlog(id).then(setLoadedPost).catch((loadError) => setError(loadError.message));
+  }, [id, post]);
 
-  if (!post) {
-    return <Navigate to="/blog" replace />;
+  if (!loadedPost) {
+    return <main className="detail-page"><div className="empty-results"><h1>{error || 'Loading story…'}</h1><Link className="pill-button pill-button--green" to="/blog">Back to journal <span>→</span></Link></div></main>;
   }
 
   return (
     <main className="blog-post-page">
-      <article className="blog-post">
-        <div className="blog-post__header">
-          <p className="eyebrow">{post.category}</p>
-          <h1>{post.title}</h1>
-          <p className="blog-post__date">{post.date}</p>
-        </div>
-        <img className="blog-post__image" src={post.image} alt="" />
-        <div className="blog-post__body">
-          <p className="blog-post__lead">{post.excerpt}</p>
-          <p>
-            A colourful kitchen makes everyday cooking feel more inviting. Keep
-            seasonal ingredients where you can see them, use your favourite
-            serving dishes, and make room for simple meals that bring people
-            together.
-          </p>
-          <p>
-            From fresh produce to a well-stocked pantry, small changes can add
-            more flavour and joy to your routine. There is no perfect kitchen;
-            there is only a space that helps you enjoy making something lovely.
-          </p>
-          <Link className="text-link" to="/blog">Back to the journal <span>→</span></Link>
-        </div>
+      <img src={loadedPost.image} alt="" />
+      <article>
+        <p className="eyebrow">{loadedPost.contentType === 'editorial' ? 'Editorial' : `By ${loadedPost.authorId?.name || 'Community member'}`} · {loadedPost.category}</p>
+        <h1>{loadedPost.title}</h1>
+        <p className="blog-post-lede">{loadedPost.excerpt}</p>
+        <p>{loadedPost.content || 'Good food does not have to be complicated. A few thoughtful choices, a little preparation, and the freedom to enjoy the process can make everyday eating feel more joyful. Start small, use what you have, and make this idea your own.'}</p>
+        <Link className="text-link" to="/blog">More from the journal <span>→</span></Link>
       </article>
     </main>
   );

@@ -1,21 +1,29 @@
 import { API_URL } from './apiUrl';
 
 async function submitAuth(path, body) {
+  let response;
   try {
-    const response = await fetch(`${API_URL}/api/auth/${path}`, {
+    response = await fetch(`${API_URL}/api/auth/${path}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.message || 'Authentication failed');
-    return result;
-  } catch (error) {
-    if (error instanceof TypeError) {
-      throw new Error('Unable to connect to the server. Start the backend and try again.', { cause: error });
-    }
-    throw error;
+  } catch {
+    throw new Error('Unable to connect to the API. Make sure the backend is running.');
   }
+
+  const responseText = await response.text();
+  let result = {};
+  if (responseText) {
+    try {
+      result = JSON.parse(responseText);
+    } catch {
+      throw new Error(`The API returned an invalid response (HTTP ${response.status}).`);
+    }
+  }
+
+  if (!response.ok) throw new Error(result.message || 'Authentication failed');
+  return result;
 }
 
 export function registerUser(body) {

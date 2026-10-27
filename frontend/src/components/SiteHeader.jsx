@@ -16,10 +16,9 @@ function SiteHeader({ onSearch, isAuthenticated, user }) {
       <Link className="brand" to="/" aria-label="Nourish home">nourish<span>.</span></Link>
       <div className="header-right">
         <nav className="main-nav" aria-label="Main navigation">
-          <Link to="/#recipes">Recipes <small>⌄</small></Link>
-          <Link to="/#stories">Our story <small>⌄</small></Link>
-          <Link to="/blog">Journal <small>⌄</small></Link>
-          {user?.role === 'admin' && <Link to="/admin">Admin</Link>}
+          <Link to="/recipes">Recipes <small>⌄</small></Link>
+          <Link to="/story">Our story <small>⌄</small></Link>
+          <Link to="/blog">Journal</Link>
         </nav>
         <div className="header-actions">
           {isSearchOpen && (

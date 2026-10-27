@@ -55,38 +55,18 @@ function App() {
           user={auth?.user}
         />
         <Routes>
-          <Route
-            path="/"
-            element={(
-              <HomePage
-                searchQuery={searchQuery}
-                savedRecipes={savedRecipes}
-                onToggleSave={handleToggleSave}
-              />
-            )}
-          />
-          <Route path="/blog" element={<BlogPage isAuthenticated={Boolean(auth)} />} />
-          <Route path="/blog/:postId" element={<BlogPostPage />} />
-          <Route path="/admin" element={<AdminPage auth={auth} onAuthenticated={handleAuthenticated} />} />
-          <Route
-            path="/signin"
-            element={<AuthPage mode="signin" onAuthenticated={handleAuthenticated} />}
-          />
-          <Route
-            path="/signup"
-            element={<AuthPage mode="signup" onAuthenticated={handleAuthenticated} />}
-          />
-          <Route
-            path="/profile"
-            element={(
-              <ProfilePage
-                auth={auth}
-                savedRecipes={savedRecipes}
-                onToggleSave={handleToggleSave}
-                onLogout={handleLogout}
-              />
-            )}
-          />
+          <Route path="/" element={<HomePage searchQuery={searchQuery} savedRecipes={savedRecipes} onToggleSave={handleToggleSave} />} />
+          <Route path="/blog" element={<BlogPage isAuthenticated={Boolean(auth)} posts={communityBlogPosts} />} />
+          <Route path="/blog/:id" element={<BlogPostPage posts={communityBlogPosts} />} />
+          <Route path="/recipes" element={<RecipesPage savedRecipes={savedRecipes} onToggleSave={handleToggleSave} />} />
+          <Route path="/recipes/:id/edit" element={auth ? <CreateRecipePage auth={auth} isEditing onCreated={handleRecipeCreated} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />
+          <Route path="/recipes/:id" element={auth ? <RecipeDetailPage auth={auth} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />
+          <Route path="/story" element={<StoryPage />} />
+          <Route path="/create-recipe" element={auth ? <CreateRecipePage auth={auth} onCreated={handleRecipeCreated} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />
+          <Route path="/create-blog" element={auth ? <CreateBlogPage auth={auth} onCreated={handleBlogCreated} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />
+          <Route path="/signin" element={<AuthPage mode="signin" onAuthenticated={setAuth} />} />
+          <Route path="/signup" element={<AuthPage mode="signup" onAuthenticated={setAuth} />} />
+          <Route path="/profile" element={auth ? <ProfilePage auth={auth} savedRecipes={savedRecipes} myRecipes={myRecipes} blogPosts={userBlogPosts} onToggleSave={handleToggleSave} onLogout={handleLogout} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />
         </Routes>
         <SiteFooter isAuthenticated={Boolean(auth)} />
       </div>
