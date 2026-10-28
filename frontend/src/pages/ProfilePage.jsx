@@ -52,7 +52,10 @@ function ProfilePage({ auth, savedRecipes, myRecipes, blogPosts, onToggleSave, o
             <h1>{user.name || 'Administrator'}</h1>
             <p>{user.email}</p>
           </div>
-          <button className="profile-logout" type="button" onClick={handleLogout}>Sign out</button>
+          <div className="profile-hero-actions">
+            <Link className="pill-button pill-button--white" to="/admin">Administrator page <span>→</span></Link>
+            <button className="profile-logout" type="button" onClick={handleLogout}>Sign out</button>
+          </div>
         </section>
       </main>
     );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { editorialRecipes } from '../data/content';
+import BackButton from '../components/BackButton';
 import { getRecipe } from '../services/recipeApi';
 
 function RecipeDetailPage({ auth, savedRecipes, onToggleSave }) {
@@ -15,9 +16,9 @@ function RecipeDetailPage({ auth, savedRecipes, onToggleSave }) {
   }, [id, fallback]);
 
   if (error) {
-    return <main className="detail-page"><div className="empty-results"><h1>Recipe unavailable</h1><p>{error}</p><Link className="pill-button pill-button--green" to="/recipes">Back to recipes <span>→</span></Link></div></main>;
+    return <main className="detail-page"><BackButton fallback="/recipes" label="recipes" /><div className="empty-results"><h1>Recipe unavailable</h1><p>{error}</p><Link className="pill-button pill-button--green" to="/recipes">Back to recipes <span>→</span></Link></div></main>;
   }
-  if (!recipe) return <main className="detail-page"><p>Loading recipe…</p></main>;
+  if (!recipe) return <main className="detail-page"><BackButton fallback="/recipes" label="recipes" /><p>Loading recipe…</p></main>;
 
   const ingredients = recipe.ingredients || [];
   const steps = recipe.steps || [];
@@ -30,6 +31,7 @@ function RecipeDetailPage({ auth, savedRecipes, onToggleSave }) {
   const servings = recipe.servings ? `${recipe.servings} servings` : 'Fresh and delicious';
   return (
     <main className="detail-page">
+      <BackButton fallback="/recipes" label="recipes" />
       <section className="detail-intro">
         <div className="detail-intro__copy">
           <div className="recipe-facts">
