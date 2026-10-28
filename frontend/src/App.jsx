@@ -85,7 +85,7 @@ function App() {
           <Route path="/blog/:id" element={<BlogPostPage posts={communityBlogPosts} />} />
           <Route path="/recipes" element={<RecipesPage savedRecipes={savedRecipes} onToggleSave={handleToggleSave} />} />
           <Route path="/recipes/:id/edit" element={auth ? <CreateRecipePage auth={auth} isEditing onCreated={handleRecipeCreated} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />
-          <Route path="/recipes/:id" element={auth ? <RecipeDetailPage auth={auth} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />
+          <Route path="/recipes/:id" element={auth ? <RecipeDetailPage auth={auth} savedRecipes={savedRecipes} onToggleSave={handleToggleSave} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />
           <Route path="/story" element={<StoryPage />} />
           <Route path="/admin" element={<AdminPage auth={auth} onAuthenticated={handleAuthenticated} />} />
           <Route path="/create-recipe" element={auth ? <CreateRecipePage auth={auth} onCreated={handleRecipeCreated} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />
