@@ -3,7 +3,12 @@ import { useState } from 'react';
 
 function SiteHeader({ onSearch, isAuthenticated, user }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [query, setQuery] = useState('');
+
+  function closeMenu() {
+    setIsMenuOpen(false);
+  }
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -15,10 +20,11 @@ function SiteHeader({ onSearch, isAuthenticated, user }) {
     <header className="site-header">
       <Link className="brand" to="/" aria-label="Nourish home">nourish<span>.</span></Link>
       <div className="header-right">
-        <nav className="main-nav" aria-label="Main navigation">
-          <Link to="/recipes">Recipes <small>⌄</small></Link>
-          <Link to="/story">Our story <small>⌄</small></Link>
-          <Link to="/blog">Journal <small>⌄</small></Link>
+        <nav className={`main-nav${isMenuOpen ? ' main-nav--open' : ''}`} aria-label="Main navigation">
+          <Link to="/recipes" onClick={closeMenu}>Recipes <small>⌄</small></Link>
+          <Link to="/story" onClick={closeMenu}>Our story <small>⌄</small></Link>
+          <Link to="/blog" onClick={closeMenu}>Journal <small>⌄</small></Link>
+          {isAuthenticated && user?.role === 'admin' && <Link className="mobile-admin-link" to="/admin" onClick={closeMenu}>Administrator</Link>}
         </nav>
         <div className="header-actions">
           {isSearchOpen && (
@@ -47,7 +53,7 @@ function SiteHeader({ onSearch, isAuthenticated, user }) {
               {user?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
             </Link>
           )}
-          <button className="menu-button" type="button" aria-label="Open menu">☰</button>
+          <button className="menu-button" type="button" aria-label={isMenuOpen ? 'Close menu' : 'Open menu'} aria-expanded={isMenuOpen} onClick={() => setIsMenuOpen((open) => !open)}>☰</button>
         </div>
       </div>
     </header>
