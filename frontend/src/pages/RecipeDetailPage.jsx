@@ -16,8 +16,13 @@ function RecipeDetailPage({ auth, savedRecipes, onToggleSave }) {
 
   useEffect(() => {
     if (fallback) return;
-    getRecipe(id).then(setRecipe).catch((err) => setError(err.message));
-    if (!fallback) getComments(id).then(setComments).catch(() => {});
+    getRecipe(id)
+      .then((loadedRecipe) => {
+        setRecipe(loadedRecipe);
+        return getComments(loadedRecipe._id || id);
+      })
+      .then(setComments)
+      .catch((err) => setError(err.message));
   }, [id, fallback]);
 
   if (error) {

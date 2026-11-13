@@ -1,26 +1,29 @@
 import { API_URL } from './apiUrl';
 
+async function readApiResponse(response, fallbackMessage) {
+  const contentType = response.headers.get('content-type') || '';
+  const result = contentType.includes('application/json')
+    ? await response.json()
+    : null;
+  if (!response.ok) {
+    throw new Error(result?.message || `${fallbackMessage} (HTTP ${response.status})`);
+  }
+  return result;
+}
+
 export async function getRecipes(ingredients = []) {
   const params = new URLSearchParams();
   ingredients.forEach((ingredient) => params.append('ingredients', ingredient));
   const query = params.toString();
   const response = await fetch(`${API_URL}/api/recipes${query ? `?${query}` : ''}`, { cache: 'no-store' });
 
-  if (!response.ok) {
-    throw new Error('Failed to load recipes');
-  }
-
-  return response.json();
+  return readApiResponse(response, 'Failed to load recipes');
 }
 
 export async function getRecipe(id) {
   const response = await fetch(`${API_URL}/api/recipes/${id}`);
 
-  if (!response.ok) {
-    throw new Error('Failed to load recipe');
-  }
-
-  return response.json();
+  return readApiResponse(response, 'Failed to load recipe');
 }
 
 export async function getMyRecipes(token) {
@@ -28,9 +31,7 @@ export async function getMyRecipes(token) {
     cache: 'no-store',
     headers: { Authorization: `Bearer ${token}` }
   });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.message || 'Failed to load your recipes');
-  return result;
+  return readApiResponse(response, 'Failed to load your recipes');
 }
 
 export async function createRecipe(recipe, token) {
@@ -43,9 +44,7 @@ export async function createRecipe(recipe, token) {
     body: JSON.stringify(recipe),
   });
 
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.message || 'Failed to publish recipe');
-  return result;
+  return readApiResponse(response, 'Failed to publish recipe');
 }
 
 export async function updateRecipe(id, recipe, token) {
@@ -58,9 +57,7 @@ export async function updateRecipe(id, recipe, token) {
     body: JSON.stringify(recipe),
   });
 
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.message || 'Failed to update recipe');
-  return result;
+  return readApiResponse(response, 'Failed to update recipe');
 }
 
 export async function uploadImage(file, token) {
@@ -71,21 +68,18 @@ export async function uploadImage(file, token) {
     headers: { Authorization: `Bearer ${token}` },
     body: formData,
   });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.message || 'Image upload failed');
+  const result = await readApiResponse(response, 'Image upload failed');
   return result.imageUrl;
 }
 
 export async function getBlogs() {
   const response = await fetch(`${API_URL}/api/blogs`);
-  if (!response.ok) throw new Error('Failed to load community blogs');
-  return response.json();
+  return readApiResponse(response, 'Failed to load community blogs');
 }
 
 export async function getBlog(id) {
   const response = await fetch(`${API_URL}/api/blogs/${id}`);
-  if (!response.ok) throw new Error('Failed to load blog post');
-  return response.json();
+  return readApiResponse(response, 'Failed to load blog post');
 }
 
 export async function createBlog(post, token) {
@@ -94,9 +88,7 @@ export async function createBlog(post, token) {
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify(post),
   });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.message || 'Failed to publish blog post');
-  return result;
+  return readApiResponse(response, 'Failed to publish blog post');
 }
 
 async function communityRequest(path, token, options = {}) {
@@ -109,9 +101,7 @@ async function communityRequest(path, token, options = {}) {
     }
   });
   if (response.status === 204) return null;
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.message || 'Community request failed');
-  return result;
+  return readApiResponse(response, 'Community request failed');
 }
 
 export function getCreators(token) {
