@@ -2,6 +2,7 @@ const express = require('express');
 const requireAuth = require('../middleware/auth');
 const {
     listRecipes,
+    listMyRecipes,
     getRecipe,
     createRecipe,
     updateRecipe,
@@ -11,6 +12,7 @@ const {
 const router = express.Router();
 
 router.get('/', listRecipes);
+router.get('/mine', requireAuth, listMyRecipes);
 router.get('/:id', getRecipe);
 router.post('/', requireAuth, createRecipe);
 router.put('/:id', requireAuth, updateRecipe);

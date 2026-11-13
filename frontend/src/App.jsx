@@ -5,6 +5,7 @@ import SiteHeader from './components/SiteHeader';
 import AuthPage from './pages/AuthPage';
 import AdminPage from './pages/AdminPage';
 import BlogPage from './pages/BlogPage';
+import CommunityPage from './pages/CommunityPage';
 import BlogPostPage from './pages/BlogPostPage';
 import CreateBlogPage from './pages/CreateBlogPage';
 import CreateRecipePage from './pages/CreateRecipePage';
@@ -82,6 +83,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage searchQuery={searchQuery} savedRecipes={savedRecipes} onToggleSave={handleToggleSave} />} />
           <Route path="/blog" element={<BlogPage isAuthenticated={Boolean(auth)} posts={communityBlogPosts} />} />
+          <Route path="/community" element={auth ? <CommunityPage auth={auth} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />
           <Route path="/blog/:id" element={<BlogPostPage posts={communityBlogPosts} />} />
           <Route path="/recipes" element={<RecipesPage savedRecipes={savedRecipes} onToggleSave={handleToggleSave} />} />
           <Route path="/recipes/:id/edit" element={auth ? <CreateRecipePage auth={auth} isEditing onCreated={handleRecipeCreated} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />

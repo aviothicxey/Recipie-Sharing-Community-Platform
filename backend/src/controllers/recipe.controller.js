@@ -76,6 +76,17 @@ async function listRecipes(req, res, next) {
     }
 }
 
+async function listMyRecipes(req, res, next) {
+    try {
+        const recipes = await Recipe.find({ authorId: req.user._id })
+            .populate('authorId', 'name avatarUrl')
+            .sort({ createdAt: -1, _id: -1 });
+        return res.json({ data: recipes, nextCursor: null });
+    } catch (error) {
+        return next(error);
+    }
+}
+
 async function getRecipe(req, res, next) {
     try {
         if (!isValidId(req.params.id)) return res.status(400).json({ message: 'Invalid recipe id' });
@@ -120,4 +131,4 @@ async function deleteRecipe(req, res, next) {
         return next(error);
     }
 }
-module.exports = { listRecipes, getRecipe, createRecipe, updateRecipe, deleteRecipe };
+module.exports = { listRecipes, listMyRecipes, getRecipe, createRecipe, updateRecipe, deleteRecipe };

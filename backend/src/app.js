@@ -6,6 +6,7 @@ const recipeRoutes = require('./routes/recipe.routes');
 const blogRoutes = require('./routes/blog.routes');
 const uploadRoutes = require('./routes/upload.routes');
 const adminRoutes = require('./routes/admin.routes');
+const communityRoutes = require('./routes/community.routes');
 
 const app = express();
 
@@ -46,6 +47,10 @@ app.use((req, res, next) => {
 
 // Parse JSON request bodies
 app.use(express.json({ limit: '1mb' }));
+app.use('/api', (req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store, max-age=0');
+    next();
+});
 
 // API health check
 app.get('/', (req, res) => {
@@ -58,6 +63,7 @@ app.use('/api/recipes', recipeRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/uploads', uploadRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/community', communityRoutes);
 
 // Debug endpoint
 app.get('/debug-upload-route', (req, res) => {

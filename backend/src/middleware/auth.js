@@ -19,7 +19,7 @@ async function requireAuth(req, res, next) {
             return next();
         }
 
-        const user = await User.findById(payload.userId).select('_id name email role status');
+        const user = await User.findById(payload.userId).select('_id name email role status following');
 
         if (!user) {
             return res.status(401).json({ message: 'User no longer exists' });

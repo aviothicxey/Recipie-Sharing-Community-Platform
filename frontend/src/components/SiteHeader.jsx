@@ -24,6 +24,7 @@ function SiteHeader({ onSearch, isAuthenticated, user }) {
           <Link to="/recipes" onClick={closeMenu}>Recipes <small>⌄</small></Link>
           <Link to="/story" onClick={closeMenu}>Our story <small>⌄</small></Link>
           <Link to="/blog" onClick={closeMenu}>Journal <small>⌄</small></Link>
+          {isAuthenticated && <Link to="/community" onClick={closeMenu}>Community <small>⌄</small></Link>}
           {isAuthenticated && user?.role === 'admin' && <Link className="mobile-admin-link" to="/admin" onClick={closeMenu}>Administrator</Link>}
         </nav>
         <div className="header-actions">
