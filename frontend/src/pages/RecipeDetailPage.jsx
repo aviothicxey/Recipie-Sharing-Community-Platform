@@ -14,16 +14,46 @@ function RecipeDetailPage({ auth, savedRecipes, onToggleSave }) {
   const [replyTo, setReplyTo] = useState(null);
   const [replyText, setReplyText] = useState('');
 
-  useEffect(() => {
-    if (fallback) return;
-    getRecipe(id)
-      .then((loadedRecipe) => {
-        setRecipe(loadedRecipe);
-        return getComments(loadedRecipe._id || id);
-      })
-      .then(setComments)
-      .catch((err) => setError(err.message));
-  }, [id, fallback]);
+  
+useEffect(() => {
+  if (fallback) return;
+
+  let cancelled = false;
+
+  async function loadRecipe() {
+    try {
+      const loadedRecipe = await getRecipe(id);
+
+      if (cancelled) return;
+
+      setRecipe(loadedRecipe);
+
+      try {
+        const loadedComments = await getComments(
+          loadedRecipe._id || id
+        );
+
+        if (!cancelled) {
+          setComments(loadedComments);
+        }
+      } catch (commentError) {
+        console.error("Failed to load comments:", commentError);
+      }
+
+    } catch (err) {
+      if (!cancelled) {
+        setError(err.message);
+      }
+    }
+  }
+
+  loadRecipe();
+
+  return () => {
+    cancelled = true;
+  };
+}, [id, fallback]);
+
 
   if (error) {
     return <main className="detail-page"><BackButton fallback="/recipes" label="recipes" /><div className="empty-results"><h1>Recipe unavailable</h1><p>{error}</p><Link className="pill-button pill-button--green" to="/recipes">Back to recipes <span>→</span></Link></div></main>;
