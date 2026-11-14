@@ -317,6 +317,7 @@ button { font: inherit; }
   .header-actions button:not(.menu-button):not(.notification-button) { display: none; }
   .header-right { gap: 0; }
   .header-actions { padding-left: 0; border-left: 0; }
+  .notification-popover { position: fixed; top: 64px; right: .75rem; left: .75rem; width: auto; }
   .navbar-search { position: absolute; top: 64px; left: 1rem; right: 1rem; z-index: 2; padding: .65rem; background: #fffaf0; border: 1px solid var(--ink); box-shadow: 4px 4px 0 var(--orange); }
   .navbar-search input { width: 100%; }
   .auth-links { display: none; }
@@ -374,8 +375,12 @@ button { font: inherit; }
   .story-content, .detail-intro, .detail-recipe, .detail-method ol { grid-template-columns: 1fr; }
   .story-content img { min-height: 330px; }
   .story-content > div { padding: 3.5rem 1.5rem; }
+  .community-content { grid-template-columns: 1fr; gap: 2rem; padding: 4rem 1.25rem; }
+  .community-content, .community-content > div, .creator-list, .creator-card { min-width: 0; width: 100%; }
+  .creator-card { align-items: stretch; flex-direction: column; }
+  .creator-card__info, .creator-card > .pill-button { width: 100%; }
   .detail-intro { gap: 1.5rem; padding: 3.5rem 1.5rem 2rem; }
-  .detail-intro__art { display: none; }
+  .detail-intro__art { display: block; justify-self: center; font-size: 6rem; }
   .detail-recipe { margin: 0 1rem; border-radius: 0 0 18px 18px; }
   .detail-recipe__image { min-height: 360px; }
   .detail-ingredients { padding: 3rem 1.5rem; }
