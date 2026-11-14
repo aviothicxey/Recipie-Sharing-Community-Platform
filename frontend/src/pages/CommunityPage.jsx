@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getChannel, getCreators, getNotifications, getOwnChannel, markNotificationsRead, postChannelMessage, searchCreators, toggleFollow } from '../services/recipeApi';
+import { getChannel, getCreators, getOwnChannel, postChannelMessage, searchCreators, toggleFollow } from '../services/recipeApi';
 import { useSearchParams } from 'react-router-dom';
 
 function CommunityPage({ auth }) {
@@ -9,12 +9,10 @@ function CommunityPage({ auth }) {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
-  const [notifications, setNotifications] = useState([]);
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
     getCreators(auth.token).then(setCreators).catch((err) => setError(err.message));
-    getNotifications(auth.token).then(setNotifications).catch(() => {});
     if (searchParams.get('mine')) {
       getOwnChannel(auth.token).then((result) => {
         setSelected({ id: result.channel.ownerId._id, name: result.channel.ownerId.name, following: true });
@@ -26,7 +24,6 @@ function CommunityPage({ auth }) {
   useEffect(() => {
     const timer = setInterval(() => {
       if (selected) getChannel(selected.id, auth.token).then(setChannel).catch(() => {});
-      getNotifications(auth.token).then(setNotifications).catch(() => {});
     }, 10000);
     return () => clearInterval(timer);
   }, [auth.token, selected]);
@@ -78,7 +75,6 @@ function CommunityPage({ auth }) {
         <div>
           <p className="eyebrow">Creators to follow</p>
           <form className="community-search" onSubmit={handleSearch}><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search creators..." /><button className="pill-button pill-button--green" type="submit">Search</button></form>
-          {notifications.filter((item) => !item.readAt).length > 0 && <button className="notification-banner" type="button" onClick={() => { markNotificationsRead(auth.token); setNotifications((current) => current.map((item) => ({ ...item, readAt: new Date().toISOString() }))); }}>You have {notifications.filter((item) => !item.readAt).length} new notification(s)</button>}
           {error && <p className="api-note">{error}</p>}
           <div className="creator-list">
             {creators.map((creator) => (

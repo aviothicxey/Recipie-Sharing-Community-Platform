@@ -103,16 +103,17 @@ useEffect(() => {
             <span>♧ {servings}</span>
             <span>≡ {category}</span>
           </div>
+          <div className="detail-intro__art detail-intro__art--subtle" aria-hidden="true">🥨</div>
           <h1>{recipe.title}</h1>
           <p>{recipe.description || 'A Nourish community recipe made for sharing.'}</p>
           <div className="detail-actions">
             <button className="detail-save-button" type="button" onClick={() => onToggleSave(recipe)}>
-              {isSaved ? 'Saved Recipe' : 'Save Recipe'} <span>↗</span>
+              {isSaved ? 'Saved Recipe' : 'Save Recipe'}
             </button>
             {canEdit && <Link className="detail-edit-link" to={`/recipes/${recipe._id}/edit`}>Edit recipe <span>→</span></Link>}
           </div>
         </div>
-        <div className="detail-intro__art" aria-hidden="true">✦</div>
+        <div className="detail-intro__art" aria-hidden="true">🥨</div>
       </section>
       <section className="detail-recipe">
         <div className="detail-recipe__image">
@@ -124,6 +125,7 @@ useEffect(() => {
           <h2>Ingredients</h2>
           <ul>{ingredients.length ? ingredients.map((item, index) => <li key={index}>{item.qty} {item.unit} {item.name}</li>) : <li>Use your favourite fresh ingredients and make it your own.</li>}</ul>
         </div>
+        
       </section>
       <section className="detail-method">
         <p className="eyebrow">Take your time</p>

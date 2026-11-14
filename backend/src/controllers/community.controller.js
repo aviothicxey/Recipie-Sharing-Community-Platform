@@ -184,18 +184,22 @@ async function createComment(req, res, next) {
         const recipe = await Recipe.findOne({ _id: req.params.recipeId, status: { $ne: 'hidden' } }).select('authorId');
         if (!recipe) return res.status(404).json({ message: 'Recipe not found' });
         let parentId = req.body.parentId || null;
+        let parent = null;
         if (parentId) {
             if (!validId(parentId)) return res.status(400).json({ message: 'Invalid parent comment id' });
-            const parent = await Comment.findOne({ _id: parentId, recipeId: recipe._id });
+            parent = await Comment.findOne({ _id: parentId, recipeId: recipe._id });
             if (!parent) return res.status(404).json({ message: 'Parent comment not found' });
         }
         const comment = await Comment.create({ recipeId: recipe._id, authorId: req.user._id, parentId, text });
-        if (String(recipe.authorId) !== String(req.user._id)) {
+        const recipientId = parent?.authorId || recipe.authorId;
+        if (String(recipientId) !== String(req.user._id)) {
             await Notification.create({
-                recipientId: recipe.authorId,
+                recipientId,
                 actorId: req.user._id,
                 type: 'comment',
-                text: `${req.user.name} commented on your recipe`
+                text: parent
+                    ? `${req.user.name} replied to your comment`
+                    : `${req.user.name} commented on your recipe`
             });
         }
         return res.status(201).json(await comment.populate('authorId', 'name avatarUrl'));

@@ -79,6 +79,7 @@ function App() {
           onSearch={setSearchQuery}
           isAuthenticated={Boolean(auth)}
           user={auth?.user}
+          token={auth?.token}
         />
         <Routes>
           <Route path="/" element={<HomePage searchQuery={searchQuery} savedRecipes={savedRecipes} onToggleSave={handleToggleSave} />} />
