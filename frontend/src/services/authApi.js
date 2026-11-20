@@ -1,5 +1,21 @@
 import { API_URL } from './apiUrl';
 
+export async function getAuthHeader(tokenSource) {
+  const token = typeof tokenSource === 'function' ? await tokenSource() : tokenSource;
+  if (!token) throw new Error('Please sign in again.');
+  return { Authorization: `Bearer ${token}` };
+}
+
+export async function getClerkSession(getToken, signal) {
+  const response = await fetch(`${API_URL}/api/auth/session`, {
+    headers: await getAuthHeader(getToken),
+    signal,
+  });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || 'Unable to load your DishCircle account.');
+  return result.user;
+}
+
 async function submitAuth(path, body) {
   let response;
   try {

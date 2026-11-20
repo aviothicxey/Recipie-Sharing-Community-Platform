@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginUser, registerUser } from '../services/authApi';
 
-function AuthPage({ mode = 'signin', onAuthenticated }) {
+function AuthPage({ mode = 'signin', onAuthenticated, googleEnabled }) {
   const isSignUp = mode === 'signup';
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', password: '' });
@@ -37,6 +37,7 @@ function AuthPage({ mode = 'signin', onAuthenticated }) {
           <input required minLength="8" type="password" placeholder="Password (8+ characters)" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} />
           <button className="pill-button pill-button--green" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Please wait…' : isSignUp ? 'Sign up' : 'Sign in'} <span>→</span></button>
         </form>
+        {googleEnabled && <p><Link className="pill-button" to="/google">Continue with Google</Link></p>}
         {!isSignUp && <Link className="admin-signin-link" to="/admin">Sign in as admin <span>→</span></Link>}
         <p className="auth-switch">{isSignUp ? 'Already have an account?' : 'New to Nourish?'} <Link to={isSignUp ? '/signin' : '/signup'}>{isSignUp ? 'Sign in' : 'Sign up'}</Link></p>
       </section>

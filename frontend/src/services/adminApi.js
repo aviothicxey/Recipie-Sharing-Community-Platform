@@ -1,11 +1,12 @@
 import { API_URL } from './apiUrl';
+import { getAuthHeader } from './authApi';
 
 async function request(path, auth, options = {}) {
   const response = await fetch(`${API_URL}/api/admin/${path}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${auth.token}`,
+      ...await getAuthHeader(auth.token),
       ...(options.headers || {}),
     },
   });

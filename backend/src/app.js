@@ -1,5 +1,7 @@
 
 const express = require('express');
+const jwt = require('jsonwebtoken');
+const { clerkMiddleware } = require('@clerk/express');
 
 const authRoutes = require('./routes/auth.routes');
 const recipeRoutes = require('./routes/recipe.routes');
@@ -9,21 +11,20 @@ const adminRoutes = require('./routes/admin.routes');
 const communityRoutes = require('./routes/community.routes');
 
 const app = express();
+const frontendOrigins = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    ...(process.env.FRONTEND_URL || '')
+        .split(',')
+        .map((origin) => origin.trim().replace(/\/+$/, ''))
+        .filter(Boolean),
+];
 
 // CORS configuration
 app.use((req, res, next) => {
-    const allowedOrigins = [
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-        ...(process.env.FRONTEND_URL || '')
-            .split(',')
-            .map((origin) => origin.trim().replace(/\/+$/, ''))
-            .filter(Boolean)
-    ];
-
     const requestOrigin = req.headers.origin;
 
-    if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
+    if (requestOrigin && frontendOrigins.includes(requestOrigin)) {
         res.setHeader('Access-Control-Allow-Origin', requestOrigin);
         res.setHeader('Vary', 'Origin');
     }
@@ -44,6 +45,18 @@ app.use((req, res, next) => {
 
     next();
 });
+
+if (process.env.CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY) {
+    const authenticateClerk = clerkMiddleware({ authorizedParties: frontendOrigins });
+    app.use('/api', (req, res, next) => {
+        const token = req.get('Authorization')?.match(/^Bearer (\S+)$/)?.[1];
+        // Route Clerk's RS256 session tokens to Clerk. The SDK verifies the signature.
+        if (token && jwt.decode(token, { complete: true })?.header.alg === 'RS256') {
+            return authenticateClerk(req, res, next);
+        }
+        return next();
+    });
+}
 
 // Parse JSON request bodies
 app.use(express.json({ limit: '1mb' }));

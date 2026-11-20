@@ -10,7 +10,12 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    passwordHash: { type: String, required: true, select: false },
+    clerkUserId: { type: String, unique: true, sparse: true },
+    passwordHash: {
+      type: String,
+      required() { return !this.clerkUserId; },
+      select: false,
+    },
     role: { type: String, enum: ["user", "admin"], default: "user" },
     status: { type: String, enum: ["active", "hidden"], default: "active" },
     bio: { type: String, trim: true, maxlength: 500, default: "" },
