@@ -17,7 +17,7 @@ import RecipeDetailPage from './pages/RecipeDetailPage';
 import StoryPage from './pages/StoryPage';
 import { getBlogs, getRecipes } from './services/recipeApi';
 
-function App({ googleEnabled, clerkSignedIn, clerkAuth, clerkError, clerkSignOut }) {
+function App({ googleEnabled, clerkSignedIn, clerkAuth, clerkError, clerkSignOut, onClerkProfileUpdated }) {
   const [passwordAuth, setAuth] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('nourishAuth')) || null;
@@ -44,6 +44,16 @@ function App({ googleEnabled, clerkSignedIn, clerkAuth, clerkError, clerkSignOut
 
   function handleAuthenticated(result) {
     setAuth(result);
+  }
+
+  function handleProfileUpdated(user) {
+    if (clerkSignedIn) {
+      onClerkProfileUpdated(user);
+    } else {
+      const updatedAuth = { ...passwordAuth, user };
+      localStorage.setItem('nourishAuth', JSON.stringify(updatedAuth));
+      setAuth(updatedAuth);
+    }
   }
 
   async function handleLogout() {
@@ -125,7 +135,7 @@ function App({ googleEnabled, clerkSignedIn, clerkAuth, clerkError, clerkSignOut
               )} />
             </>
           )}
-          <Route path="/profile" element={auth ? <ProfilePage key={userId} auth={auth} savedRecipes={savedRecipes} myRecipes={myRecipes} blogPosts={userBlogPosts} onToggleSave={handleToggleSave} onLogout={handleLogout} /> : signIn} />
+          <Route path="/profile" element={auth ? <ProfilePage key={userId} auth={auth} savedRecipes={savedRecipes} myRecipes={myRecipes} blogPosts={userBlogPosts} onToggleSave={handleToggleSave} onLogout={handleLogout} onProfileUpdated={handleProfileUpdated} /> : signIn} />
         </Routes>
         <SiteFooter isAuthenticated={Boolean(auth)} />
       </div>

@@ -183,6 +183,21 @@ button { font: inherit; }
 .profile-logout { margin-left: auto; padding: .65rem 1rem; border: 1px solid #fff7e8; border-radius: 999px; background: transparent; color: #fff7e8; cursor: pointer; font-size: .75rem; font-weight: 700; }
 .profile-hero-actions { display: flex; align-items: center; gap: .75rem; margin-left: auto; }
 .profile-hero-actions .profile-logout { margin-left: 0; }
+.profile-avatar, .user-avatar { overflow: hidden; }
+.profile-avatar img, .user-avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.profile-editor { max-width: 760px; margin: 2rem auto; padding: 2rem; border: 1px solid rgba(53,20,12,.16); background: #fffaf0; }
+.profile-editor h2 { margin-top: 0; font-family: 'Playfair Display', serif; font-size: 2rem; }
+.profile-editor fieldset { display: grid; gap: .8rem; min-width: 0; margin: 0; padding: 0; border: 0; }
+.profile-editor label { display: block; font-weight: 700; }
+.profile-editor input, .profile-editor textarea { width: 100%; min-width: 0; padding: .8rem; border: 1px solid rgba(53,20,12,.3); border-radius: .3rem; background: white; color: var(--green); font: inherit; }
+.profile-editor input[type="file"] { padding: .6rem 0; border: 0; background: transparent; }
+.profile-editor textarea { resize: vertical; }
+.profile-editor :disabled { cursor: wait; opacity: .7; }
+.profile-photo-editor { display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; margin-bottom: 1rem; }
+.profile-photo-editor > div:last-child { flex: 1 1 220px; min-width: 0; }
+.profile-photo-editor p { margin: .3rem 0 .8rem; font-size: .85rem; }
+.profile-photo-editor button { border: 0; background: transparent; cursor: pointer; }
+.profile-save-message { padding: 1rem 7%; color: var(--green); }
 .profile-content { padding: 6rem 7%; }
 .profile-heading { display: flex; align-items: end; justify-content: space-between; margin-bottom: 2.5rem; }
 .profile-heading h2 { margin: 0; font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 4vw, 4.5rem); line-height: .95; letter-spacing: -.06em; }

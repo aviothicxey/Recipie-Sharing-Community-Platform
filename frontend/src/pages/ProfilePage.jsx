@@ -1,9 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import RecipeCard from '../components/RecipeCard';
+import ProfileEditor from '../components/ProfileEditor';
 import { createChannel, getMyRecipes, getRecipes } from '../services/recipeApi';
 
-function ProfilePage({ auth, savedRecipes, myRecipes, blogPosts, onToggleSave, onLogout }) {
+function ProfilePage({ auth, savedRecipes, myRecipes, blogPosts, onToggleSave, onLogout, onProfileUpdated }) {
   const navigate = useNavigate();
   const user = auth?.user || {};
   const [ownedRecipes, setOwnedRecipes] = useState(myRecipes || []);
@@ -12,6 +13,11 @@ function ProfilePage({ auth, savedRecipes, myRecipes, blogPosts, onToggleSave, o
   const [channelName, setChannelName] = useState('');
   const [channelDescription, setChannelDescription] = useState('');
   const [channelMessage, setChannelMessage] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [profileMessage, setProfileMessage] = useState('');
+  const avatar = <div className="profile-avatar">{user.avatarUrl ? <img src={user.avatarUrl} alt={`${user.name || 'Your'} profile`} /> : user.name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || 'U'}</div>;
+  const editButton = user.id !== 'configured-admin' && <button className="pill-button pill-button--white" type="button" aria-expanded={isEditing} onClick={() => { setIsEditing(true); setProfileMessage(''); }}>Edit profile</button>;
+  const editor = isEditing ? <ProfileEditor auth={auth} onCancel={() => setIsEditing(false)} onSaved={(updatedUser) => { onProfileUpdated(updatedUser); setIsEditing(false); setProfileMessage('Your profile has been updated.'); }} /> : profileMessage && <p className="profile-save-message" role="status">{profileMessage}</p>;
 
   useEffect(() => {
     let isMounted = true;
@@ -76,17 +82,19 @@ function ProfilePage({ auth, savedRecipes, myRecipes, blogPosts, onToggleSave, o
     return (
       <main className="profile-page">
         <section className="profile-hero">
-          <div className="profile-avatar">{user.name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || 'A'}</div>
+          {avatar}
           <div>
             <p className="eyebrow">Nourish administration</p>
             <h1>{user.name || 'Administrator'}</h1>
             <p>{user.email}</p>
           </div>
           <div className="profile-hero-actions">
+            {editButton}
             <Link className="pill-button pill-button--white" to="/admin">Administrator page <span>→</span></Link>
             <button className="profile-logout" type="button" onClick={handleLogout}>Sign out</button>
           </div>
         </section>
+        {editor}
       </main>
     );
   }
@@ -94,14 +102,19 @@ function ProfilePage({ auth, savedRecipes, myRecipes, blogPosts, onToggleSave, o
   return (
     <main className="profile-page">
       <section className="profile-hero">
-        <div className="profile-avatar">{user.name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || 'U'}</div>
+        {avatar}
         <div>
           <p className="eyebrow">Your Nourish profile</p>
           <h1>{user.name || 'Nourish member'}</h1>
           <p>{user.email}</p>
+          {user.bio && <p>{user.bio}</p>}
         </div>
-        <button className="profile-logout" type="button" onClick={handleLogout}>Sign out</button>
+        <div className="profile-hero-actions">
+          {editButton}
+          <button className="profile-logout" type="button" onClick={handleLogout}>Sign out</button>
+        </div>
       </section>
+      {editor}
       <section className="profile-content profile-content--owned">
         <div className="profile-heading">
           <div><p className="eyebrow">Your contributions</p><h2>Your recipes & blogs</h2></div>

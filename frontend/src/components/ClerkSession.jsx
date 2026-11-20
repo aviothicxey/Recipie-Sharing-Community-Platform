@@ -29,6 +29,7 @@ export default function ClerkSession() {
       clerkAuth={activeSession?.auth}
       clerkError={activeSession?.error}
       clerkSignOut={signOut}
+      onClerkProfileUpdated={(user) => setSession((current) => ({ ...current, auth: { ...current.auth, user } }))}
     />
   );
 }

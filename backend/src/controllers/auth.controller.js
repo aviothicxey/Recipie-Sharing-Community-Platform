@@ -90,4 +90,33 @@ function getSession(req, res) {
     return res.json({ user: publicUser(req.user) });
 }
 
-module.exports = { register, login, adminLogin, getSession };
+async function updateProfile(req, res, next) {
+    try {
+        if (typeof req.user.save !== 'function') {
+            return res.status(403).json({ message: 'This administrator account does not have an editable profile' });
+        }
+        const { name, bio, avatarUrl } = req.body;
+        if (typeof name !== 'string' || !name.trim() || name.trim().length > 80
+            || typeof bio !== 'string' || bio.trim().length > 500
+            || typeof avatarUrl !== 'string' || avatarUrl.length > 2048) {
+            return res.status(400).json({ message: 'Enter a name of up to 80 characters and a bio of up to 500 characters' });
+        }
+        if (avatarUrl) {
+            try {
+                const url = new URL(avatarUrl);
+                if (url.protocol !== 'https:' || url.username || url.password) throw new Error();
+            } catch {
+                return res.status(400).json({ message: 'Profile pictures must use a valid HTTPS image URL' });
+            }
+        }
+        req.user.name = name.trim();
+        req.user.bio = bio.trim();
+        req.user.avatarUrl = avatarUrl;
+        await req.user.save();
+        return res.json({ user: publicUser(req.user) });
+    } catch (error) {
+        return next(error);
+    }
+}
+
+module.exports = { register, login, adminLogin, getSession, updateProfile };

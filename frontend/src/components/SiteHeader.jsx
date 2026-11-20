@@ -124,7 +124,7 @@ function SiteHeader({ onSearch, isAuthenticated, user, token }) {
           {!isAuthenticated && <div className="auth-links"><Link to="/signin">Sign in</Link><Link className="auth-signup" to="/signup">Sign up</Link></div>}
           {isAuthenticated && (
             <Link className="user-avatar" to="/profile" aria-label="Open your profile">
-              {user?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
+              {user?.avatarUrl ? <img src={user.avatarUrl} alt="" /> : user?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
             </Link>
           )}
           <button className="menu-button" type="button" aria-label={isMenuOpen ? 'Close menu' : 'Open menu'} aria-expanded={isMenuOpen} onClick={() => setIsMenuOpen((open) => !open)}>☰</button>

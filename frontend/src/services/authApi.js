@@ -16,6 +16,17 @@ export async function getClerkSession(getToken, signal) {
   return result.user;
 }
 
+export async function updateProfile(profile, token) {
+  const response = await fetch(`${API_URL}/api/auth/profile`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...await getAuthHeader(token) },
+    body: JSON.stringify(profile),
+  });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || 'Unable to save your profile.');
+  return result.user;
+}
+
 async function submitAuth(path, body) {
   let response;
   try {
