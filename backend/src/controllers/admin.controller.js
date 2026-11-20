@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { clerkClient } = require('@clerk/express');
 const User = require('../models/User');
 const Recipe = require('../models/Recipe');
 const BlogPost = require('../models/BlogPost');
@@ -60,6 +61,10 @@ async function deleteResource(req, res, next) {
         if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).json({ message: 'Invalid resource id' });
         if (resource === 'users' && id === req.user._id.toString()) {
             return res.status(400).json({ message: 'You cannot delete the signed-in administrator' });
+        }
+        if (resource === 'users') {
+            const user = await User.findById(id).select('clerkUserId');
+            if (user?.clerkUserId) await clerkClient.users.banUser(user.clerkUserId);
         }
         const deleted = await Model.findByIdAndDelete(id);
         if (!deleted) return res.status(404).json({ message: 'Resource not found' });

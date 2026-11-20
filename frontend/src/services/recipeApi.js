@@ -1,4 +1,5 @@
 import { API_URL } from './apiUrl';
+import { getAuthHeader } from './authApi';
 
 async function readApiResponse(response, fallbackMessage) {
   const contentType = response.headers.get('content-type') || '';
@@ -29,7 +30,7 @@ export async function getRecipe(id) {
 export async function getMyRecipes(token) {
   const response = await fetch(`${API_URL}/api/recipes/mine`, {
     cache: 'no-store',
-    headers: { Authorization: `Bearer ${token}` }
+    headers: await getAuthHeader(token)
   });
   return readApiResponse(response, 'Failed to load your recipes');
 }
@@ -39,7 +40,7 @@ export async function createRecipe(recipe, token) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+      ...await getAuthHeader(token),
     },
     body: JSON.stringify(recipe),
   });
@@ -52,7 +53,7 @@ export async function updateRecipe(id, recipe, token) {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+      ...await getAuthHeader(token),
     },
     body: JSON.stringify(recipe),
   });
@@ -65,7 +66,7 @@ export async function uploadImage(file, token) {
   formData.append('image', file);
   const response = await fetch(`${API_URL}/api/uploads/image`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${token}` },
+    headers: await getAuthHeader(token),
     body: formData,
   });
   const result = await readApiResponse(response, 'Image upload failed');
@@ -85,7 +86,7 @@ export async function getBlog(id) {
 export async function createBlog(post, token) {
   const response = await fetch(`${API_URL}/api/blogs`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    headers: { 'Content-Type': 'application/json', ...await getAuthHeader(token) },
     body: JSON.stringify(post),
   });
   return readApiResponse(response, 'Failed to publish blog post');
@@ -96,7 +97,7 @@ async function communityRequest(path, token, options = {}) {
     ...options,
     headers: {
       ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(token ? await getAuthHeader(token) : {}),
       ...(options.headers || {})
     }
   });

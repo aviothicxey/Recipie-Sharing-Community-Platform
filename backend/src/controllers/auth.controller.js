@@ -42,7 +42,7 @@ async function login(req, res, next) {
         const { email, password } = req.body;
         const normalizedEmail = email?.toLowerCase().trim();
         const user = await User.findOne({ email: normalizedEmail }).select('+passwordHash');
-        const validPassword = user && await bcrypt.compare(password || '', user.passwordHash);
+        const validPassword = user?.passwordHash && await bcrypt.compare(password || '', user.passwordHash);
 
         if (!validPassword) {
             return res.status(401).json({ message: 'Invalid email or password' });
@@ -75,7 +75,7 @@ async function adminLogin(req, res, next) {
         }
 
         const user = await User.findOne({ email: normalizedEmail, role: 'admin' }).select('+passwordHash');
-        const validPassword = user && await bcrypt.compare(password || '', user.passwordHash);
+        const validPassword = user?.passwordHash && await bcrypt.compare(password || '', user.passwordHash);
         if (!validPassword) {
             return res.status(401).json({ message: 'Invalid admin email or password' });
         }
@@ -86,4 +86,8 @@ async function adminLogin(req, res, next) {
     }
 }
 
-module.exports = { register, login, adminLogin };
+function getSession(req, res) {
+    return res.json({ user: publicUser(req.user) });
+}
+
+module.exports = { register, login, adminLogin, getSession };

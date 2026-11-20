@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { SignIn, SignUp } from '@clerk/react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import SiteFooter from './components/SiteFooter';
 import SiteHeader from './components/SiteHeader';
 import AuthPage from './pages/AuthPage';
@@ -16,14 +17,15 @@ import RecipeDetailPage from './pages/RecipeDetailPage';
 import StoryPage from './pages/StoryPage';
 import { getBlogs, getRecipes } from './services/recipeApi';
 
-function App() {
-  const [auth, setAuth] = useState(() => {
+function App({ googleEnabled, clerkSignedIn, clerkAuth, clerkError, clerkSignOut }) {
+  const [passwordAuth, setAuth] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('nourishAuth')) || null;
     } catch {
       return null;
     }
   });
+  const auth = clerkSignedIn ? clerkAuth : passwordAuth;
   const [savedRecipes, setSavedRecipes] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('nourishSavedRecipes')) || [];
@@ -44,9 +46,10 @@ function App() {
     setAuth(result);
   }
 
-  function handleLogout() {
+  async function handleLogout() {
     localStorage.removeItem('nourishAuth');
     setAuth(null);
+    if (clerkSignedIn) await clerkSignOut();
   }
 
   function handleToggleSave(recipe) {
@@ -72,6 +75,19 @@ function App() {
   const myRecipes = communityRecipes.filter((recipe) => String(recipe.authorId?._id || recipe.authorId) === String(userId));
   const userBlogPosts = communityBlogPosts.filter((post) => String(post.authorId?._id || post.authorId) === String(userId));
 
+  const signIn = clerkSignedIn ? (
+    <main className="auth-page">
+      <section className="auth-card">
+        {clerkError ? (
+          <>
+            <p className="auth-error" role="alert">{clerkError}</p>
+            <button className="pill-button pill-button--green" type="button" onClick={handleLogout}>Sign out of Google session</button>
+          </>
+        ) : <p role="status">Loading your account…</p>}
+      </section>
+    </main>
+  ) : <AuthPage mode="signin" googleEnabled={googleEnabled} onAuthenticated={setAuth} />;
+
   return (
     <BrowserRouter>
       <div className="site-shell">
@@ -84,18 +100,32 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage searchQuery={searchQuery} savedRecipes={savedRecipes} onToggleSave={handleToggleSave} />} />
           <Route path="/blog" element={<BlogPage isAuthenticated={Boolean(auth)} posts={communityBlogPosts} />} />
-          <Route path="/community" element={auth ? <CommunityPage auth={auth} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />
+          <Route path="/community" element={auth ? <CommunityPage key={userId} auth={auth} /> : signIn} />
           <Route path="/blog/:id" element={<BlogPostPage posts={communityBlogPosts} />} />
           <Route path="/recipes" element={<RecipesPage savedRecipes={savedRecipes} onToggleSave={handleToggleSave} />} />
-          <Route path="/recipes/:id/edit" element={auth ? <CreateRecipePage auth={auth} isEditing onCreated={handleRecipeCreated} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />
-          <Route path="/recipes/:id" element={auth ? <RecipeDetailPage auth={auth} savedRecipes={savedRecipes} onToggleSave={handleToggleSave} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />
+          <Route path="/recipes/:id/edit" element={auth ? <CreateRecipePage auth={auth} isEditing onCreated={handleRecipeCreated} /> : signIn} />
+          <Route path="/recipes/:id" element={auth ? <RecipeDetailPage auth={auth} savedRecipes={savedRecipes} onToggleSave={handleToggleSave} /> : signIn} />
           <Route path="/story" element={<StoryPage />} />
-          <Route path="/admin" element={<AdminPage auth={auth} onAuthenticated={handleAuthenticated} />} />
-          <Route path="/create-recipe" element={auth ? <CreateRecipePage auth={auth} onCreated={handleRecipeCreated} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />
-          <Route path="/create-blog" element={auth ? <CreateBlogPage auth={auth} onCreated={handleBlogCreated} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />
-          <Route path="/signin" element={<AuthPage mode="signin" onAuthenticated={setAuth} />} />
-          <Route path="/signup" element={<AuthPage mode="signup" onAuthenticated={setAuth} />} />
-          <Route path="/profile" element={auth ? <ProfilePage auth={auth} savedRecipes={savedRecipes} myRecipes={myRecipes} blogPosts={userBlogPosts} onToggleSave={handleToggleSave} onLogout={handleLogout} /> : <AuthPage mode="signin" onAuthenticated={setAuth} />} />
+          <Route path="/admin" element={clerkSignedIn && !auth ? signIn : <AdminPage key={userId} auth={auth} onAuthenticated={handleAuthenticated} />} />
+          <Route path="/create-recipe" element={auth ? <CreateRecipePage auth={auth} onCreated={handleRecipeCreated} /> : signIn} />
+          <Route path="/create-blog" element={auth ? <CreateBlogPage auth={auth} onCreated={handleBlogCreated} /> : signIn} />
+          <Route path="/signin" element={auth ? <Navigate to="/profile" replace /> : signIn} />
+          <Route path="/signup" element={auth ? <Navigate to="/profile" replace /> : clerkSignedIn ? signIn : <AuthPage mode="signup" googleEnabled={googleEnabled} onAuthenticated={setAuth} />} />
+          {googleEnabled && (
+            <>
+              <Route path="/google" element={clerkSignedIn ? (clerkAuth ? <Navigate to="/profile" replace /> : signIn) : (
+                <main className="auth-page">
+                  <SignIn routing="hash" signUpUrl="/google/signup" forceRedirectUrl="/profile" signUpForceRedirectUrl="/profile" />
+                </main>
+              )} />
+              <Route path="/google/signup" element={clerkSignedIn ? (clerkAuth ? <Navigate to="/profile" replace /> : signIn) : (
+                <main className="auth-page">
+                  <SignUp routing="hash" signInUrl="/google" forceRedirectUrl="/profile" signInForceRedirectUrl="/profile" />
+                </main>
+              )} />
+            </>
+          )}
+          <Route path="/profile" element={auth ? <ProfilePage key={userId} auth={auth} savedRecipes={savedRecipes} myRecipes={myRecipes} blogPosts={userBlogPosts} onToggleSave={handleToggleSave} onLogout={handleLogout} /> : signIn} />
         </Routes>
         <SiteFooter isAuthenticated={Boolean(auth)} />
       </div>
